@@ -203,37 +203,42 @@ const Blob = () => {
   const meshXOffset = 0;
   const meshYOffset = -viewport.height / 2 - 0.8;
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (typeof window === "undefined") return;
-      
-      // Calculate normalized device coordinates (-1 to +1)
-      const nx = (e.clientX / window.innerWidth) * 2 - 1;
-      const ny = -(e.clientY / window.innerHeight) * 2 + 1;
+  const isMouseOut = useRef(false);
+  const pointerNorm = useRef({ x: 0, y: 0 });
 
-      // Map to world space based on viewport
-      const mouseWorldX = (nx * viewport.width) / 2;
-      const mouseWorldY = (ny * viewport.height) / 2;
-      
-      // Set relative to mesh position
-      targetMouse.current.set(
-        mouseWorldX - meshXOffset,
-        mouseWorldY - meshYOffset
-      );
+  useEffect(() => {
+    const handlePointerMove = (e: PointerEvent) => {
+      // Capture accurate viewport-relative normalized coordinates
+      pointerNorm.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      pointerNorm.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
     };
 
     const handleMouseLeave = () => {
-      // Send the target safely far out of bounds so the fluid gently relaxes
-      targetMouse.current.set(100.0, 100.0);
+      isMouseOut.current = true;
+    };
+    const handleMouseEnter = () => {
+      isMouseOut.current = false;
+    };
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        isMouseOut.current = true;
+      } else {
+        isMouseOut.current = false;
+      }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("pointermove", handlePointerMove);
     document.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("mouseenter", handleMouseEnter);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("pointermove", handlePointerMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener("mouseenter", handleMouseEnter);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [viewport.width, viewport.height, meshXOffset, meshYOffset]);
+  }, []);
 
   useFrame((state) => {
     if (materialRef.current) {
@@ -244,6 +249,19 @@ const Blob = () => {
         state.size.width * state.viewport.dpr,
         state.size.height * state.viewport.dpr
       );
+      
+      if (isMouseOut.current) {
+        targetMouse.current.set(100.0, 100.0);
+      } else {
+        // Map to world space based on fresh viewport dimensions and precise window coordinates
+        const mouseWorldX = (pointerNorm.current.x * state.viewport.width) / 2;
+        const mouseWorldY = (pointerNorm.current.y * state.viewport.height) / 2;
+        
+        targetMouse.current.set(
+          mouseWorldX - meshXOffset,
+          mouseWorldY - meshYOffset
+        );
+      }
       
       // Smooth interpolation for calm, focused feedback
       // Returning to original state (or trailing) is softer now
@@ -281,8 +299,6 @@ export const FluidBlob = () => {
         camera={{ position: [0, 0, 8], fov: 45 }}
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        eventSource={typeof window !== "undefined" ? document.body : undefined}
-        eventPrefix="client"
         onCreated={({ gl }) => {
             gl.setClearColor(new THREE.Color(0x000000), 0); // Transparent bg
         }}
