@@ -71,7 +71,7 @@ export function BackgroundGrid() {
           className="absolute left-1/2 top-0 -translate-x-1/2 w-[3000px] h-[3000px]"
         >
           {/* Wrapper dictates flat overlay opacity to prevent overlaps from darkening */}
-          <div className="w-full h-full text-black dark:text-white opacity-[0.07] dark:opacity-[0.04]">
+          <div className="w-full h-full text-black dark:text-white opacity-[0.12] dark:opacity-[0.08]">
             <svg width="100%" height="100%" overflow="visible">
               
               {/* Draw horizontal segments */}

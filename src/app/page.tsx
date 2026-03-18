@@ -35,7 +35,7 @@ export default function Home() {
         </div>
         
         <p className="text-lg sm:text-xl text-black/60 dark:text-white/60 max-w-2xl text-center mt-2 tracking-wide leading-relaxed font-light">
-          Seamless, frictionless calendar workflows from any text. Use <kbd className="font-mono bg-black/5 dark:bg-white/10 px-2 py-1 rounded-md text-sm border border-black/10 dark:border-white/10">cmd + /</kbd> to add events at the speed of thought.
+          Natural language to your calendar in 50ms. No forms, no friction, just pure speed for high-velocity builders. Use <kbd className="font-mono bg-black/5 dark:bg-white/10 px-2 py-1 rounded-md text-sm border border-black/10 dark:border-white/10">cmd + /</kbd> to add events at the speed of thought.
         </p>
       </motion.div>
 
