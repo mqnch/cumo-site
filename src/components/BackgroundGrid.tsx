@@ -13,6 +13,7 @@ export function BackgroundGrid() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -50,7 +51,7 @@ export function BackgroundGrid() {
   for (let vi = 0; vi < verticalLines.length; vi++) {
     vSegments[vi] = [];
     for (let hj = 0; hj < horizontalLines.length - 1; hj++) {
-      vSegments[vi][hj] = random(seedV++) > 0.60; // 60% chance to drop segment
+      vSegments[vi][hj] = random(seedV++) > 0.10; // 10% chance to drop segment
     }
   }
 
