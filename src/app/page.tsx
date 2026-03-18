@@ -3,6 +3,7 @@
 import { BackgroundGrid } from "@/components/BackgroundGrid";
 import { FluidBlob } from "@/components/FluidBlob";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -20,22 +21,22 @@ export default function Home() {
         transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
         className="z-10 flex flex-col items-center justify-center text-center max-w-4xl gap-6 sm:gap-8 w-full mt-20"
       >
+        <div className="flex items-center justify-center gap-6 sm:gap-8">
+          <Image 
+            src="/cumo.svg" 
+            alt="Cumo Logo" 
+            width={72} 
+            height={72} 
+            className="rounded-[1.5rem] shadow-xl shadow-black/10 dark:shadow-white/5 w-16 h-16 sm:w-20 sm:h-20"
+          />
+          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-black/90 to-black/50 dark:from-white dark:to-white/50 leading-tight">
+            Cumo
+          </h1>
+        </div>
         
-        <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-black/90 to-black/50 dark:from-white dark:to-white/50 leading-tight pb-2">
-          Cumo
-        </h1>
-        
-        <p className="text-lg sm:text-xl text-black/60 dark:text-white/60 max-w-xl text-center mt-2 tracking-wide leading-relaxed font-light">
-          Your focused productivity companion.
+        <p className="text-lg sm:text-xl text-black/60 dark:text-white/60 max-w-2xl text-center mt-2 tracking-wide leading-relaxed font-light">
+          Seamless, frictionless calendar workflows from any text. Use <kbd className="font-mono bg-black/5 dark:bg-white/10 px-2 py-1 rounded-md text-sm border border-black/10 dark:border-white/10">cmd + /</kbd> to add events at the speed of thought.
         </p>
-
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="mt-6 px-8 py-4 rounded-full bg-black dark:bg-white text-white dark:text-black font-medium tracking-wide shadow-lg shadow-black/20 dark:shadow-white/10 hover:shadow-xl transition-shadow"
-        >
-          Get Started
-        </motion.button>
       </motion.div>
 
       {/* Demo Video Placeholder */}
