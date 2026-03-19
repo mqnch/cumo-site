@@ -56,7 +56,7 @@ export function BackgroundGrid() {
   }
 
   return (
-    <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-white dark:bg-[#030303]">
+    <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-[#030303]">
       <div 
         className="relative w-full h-full"
         style={{
@@ -71,7 +71,7 @@ export function BackgroundGrid() {
           className="absolute left-1/2 top-0 -translate-x-1/2 w-[3000px] h-[3000px]"
         >
           {/* Wrapper dictates flat overlay opacity to prevent overlaps from darkening */}
-          <div className="w-full h-full text-black dark:text-white opacity-[0.12] dark:opacity-[0.08]">
+          <div className="w-full h-full text-white opacity-[0.08]">
             <svg width="100%" height="100%" overflow="visible">
               
               {/* Draw horizontal segments */}

@@ -94,29 +94,23 @@ float fbm(vec3 x) {
 void main() {
   vNormal = normal;
   
-  // Create slow, organic, liquid-like morphing
-  vec3 noisePos = position * 1.5 + uTime * 0.1;
+  // Create more organic, liquid-like morphing
+  vec3 noisePos = position * 1.8 + uTime * 0.12; 
   float noise = fbm(noisePos);
   
-  // Mouse interaction: Magnetic smooth pull
-  // uMouse is now passed in object coordinates
+  // Mouse interaction: Sharper, more magnetic pull
   float distToMouse = distance(position.xy, uMouse); 
+  float pullEffect = smoothstep(2.0, 0.0, distToMouse);
   
-  // Narrow the radius so the effect is localized to the cursor, not the whole sphere
-  float pullEffect = smoothstep(1.5, 0.0, distToMouse);
+  // Balanced noise for less spiky feel
+  float finalNoise = noise * (1.1 + pullEffect * 0.3);
   
-  // Barely amplify noise when reacting
-  float smoothNoise = noise * (1.0 + pullEffect * 0.15);
+  // Calculate final displacement with more power
+  vec3 newPosition = position + normal * (finalNoise * 1.2);
+  newPosition += normal * pullEffect * 0.15; 
   
-  // Calculate final displacement
-  vec3 newPosition = position + normal * (smoothNoise * 0.7);
-  
-  // Trace outer pull effect
-  newPosition += normal * pullEffect * 0.1;
-  
-  // For fragment shader
   vNoise = noise;
-  vPosition = newPosition;
+  vPosition = (modelMatrix * vec4(newPosition, 1.0)).xyz;
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
@@ -130,46 +124,51 @@ varying vec3 vPosition;
 varying vec3 vNormal;
 varying float vNoise;
 
-// High frequency noise / film grain
 float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
 }
 
 void main() {
-  // "Silver Iridescence" Palette
-  vec3 color1 = vec3(0.98, 0.98, 1.0);  // Bright Silver/White
-  vec3 color2 = vec3(0.82, 0.84, 0.85); // Mid Silver
-  vec3 color3 = vec3(0.72, 0.74, 0.76); // Darker Silver with slight blue tint
-
+  // Enhanced Silver Palette
+  vec3 color1 = vec3(1.0, 1.0, 1.0);      // Pure Silver
+  vec3 color2 = vec3(0.85, 0.88, 0.95); // Cool Silver
+  vec3 color3 = vec3(0.60, 0.65, 0.75); // Shadow Silver
   
-  // Mix based on noise for organic iridescence
-  float mix1 = smoothstep(-0.4, 0.4, vNoise);
-  vec3 baseColor = mix(color1, color2, mix1);
-  
-  float mix2 = smoothstep(-0.6, 0.6, sin(vPosition.y * 2.0 + vPosition.x + uTime * 0.3));
-  baseColor = mix(baseColor, color3, mix2);
-  
-  // Calculate Fresnel for that soft, glass-like edge
+  vec3 normal = normalize(vNormal);
   vec3 viewDirection = normalize(cameraPosition - vPosition);
-  float fresnel = dot(viewDirection, normalize(vNormal));
-  fresnel = clamp(1.0 - fresnel, 0.0, 1.0);
-  fresnel = pow(fresnel, 2.0);
   
-  // Add fresnel highlight
-  vec3 finalColor = baseColor + vec3(fresnel * 0.25);
+  // High-contrast lighting for 3D depth
+  vec3 lightDir = normalize(vec3(5.0, 5.0, 5.0));
+  float diff = max(0.0, dot(normal, lightDir));
   
-  // Dark mode vs Light mode consideration:
-  // In a bright app like Cumo, a soft bright blob is good.
+  float mixVal = smoothstep(-0.5, 0.5, vNoise);
+  vec3 baseColor = mix(color1, color2, mixVal);
+  baseColor = mix(baseColor, color3, smoothstep(0.1, -0.6, vNoise) * 0.5);
   
-  // Fine-grain overlay to prevent gradient banding
+  // Stronger Specular
+  vec3 halfDir = normalize(lightDir + viewDirection);
+  float spec = pow(max(0.0, dot(normal, halfDir)), 64.0);
+  
+  // Transparency with Fresnel
+  float fresnel = pow(1.0 - max(0.0, dot(normal, viewDirection)), 2.0);
+  
+  // Highlights
+  vec3 lighting = vec3(diff * 0.1); 
+  lighting += vec3(spec * 1.2);    // Very sharp highlight
+  lighting += vec3(fresnel * 0.6); // Strong rim light
+  
+  vec3 finalColor = baseColor + lighting;
+  
+  // Grain and Iridescence
   vec2 st = gl_FragCoord.xy / uResolution.xy;
-  float grainCenter = random(st + uTime * 0.01);
-  float grain = (grainCenter - 0.5) * 0.08; 
-  
+  float grain = (random(st + uTime * 0.01) - 0.5) * 0.06; 
   finalColor += grain;
   
-  // Slight transparency
-  float alpha = 0.95 - (fresnel * 0.15);
+  vec3 irid = vec3(0.05, 0.05, 0.1) * sin(fresnel * 8.0 + uTime * 0.5);
+  finalColor += irid;
+
+  // Restore transparency
+  float alpha = 0.85 - (fresnel * 0.35); // transparent edges
 
   gl_FragColor = vec4(finalColor, alpha);
 }
@@ -178,21 +177,16 @@ void main() {
 const Blob = () => {
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
-  
   const { viewport } = useThree();
   
-  // Target mouse position for smooth interpolation
-  const targetMouse = useRef(new THREE.Vector2(0, 0));
-  const currentMouse = useRef(new THREE.Vector2(0, 0));
+  const targetMouse = useRef(new THREE.Vector2(100, 100));
+  const currentMouse = useRef(new THREE.Vector2(100, 100));
   
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
-      uMouse: { value: new THREE.Vector2(0, 0) },
-      uResolution: { value: new THREE.Vector2(
-        typeof window !== "undefined" ? window.innerWidth : 1000, 
-        typeof window !== "undefined" ? window.innerHeight : 1000
-      ) },
+      uMouse: { value: new THREE.Vector2(100, 100) },
+      uResolution: { value: new THREE.Vector2(1, 1) },
     }),
     []
   );
@@ -200,27 +194,36 @@ const Blob = () => {
   const meshXOffset = 0;
   const meshYOffset = -viewport.height / 2 - 0.8;
 
-  const isMouseOut = useRef(false);
+  const isMouseOut = useRef(true);
+  const hasMovedSinceFocus = useRef(false);
   const pointerNorm = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
-      // Capture accurate viewport-relative normalized coordinates
+      hasMovedSinceFocus.current = true;
+      isMouseOut.current = false;
       pointerNorm.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       pointerNorm.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
     };
 
     const handleMouseLeave = () => {
       isMouseOut.current = true;
+      hasMovedSinceFocus.current = false;
     };
+    
     const handleMouseEnter = () => {
-      isMouseOut.current = false;
+        // Wait for first move to deactivate isMouseOut
     };
+
+    const handleFocus = () => {
+        isMouseOut.current = true;
+        hasMovedSinceFocus.current = false;
+    };
+
     const handleVisibilityChange = () => {
       if (document.hidden) {
         isMouseOut.current = true;
-      } else {
-        isMouseOut.current = false;
+        hasMovedSinceFocus.current = false;
       }
     };
 
@@ -228,29 +231,33 @@ const Blob = () => {
     document.addEventListener("mouseleave", handleMouseLeave);
     document.addEventListener("mouseenter", handleMouseEnter);
     document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("blur", handleFocus);
     
     return () => {
       window.removeEventListener("pointermove", handlePointerMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("blur", handleFocus);
     };
   }, []);
 
   useFrame((state) => {
+    const time = state.clock.elapsedTime;
+    
     if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+      materialRef.current.uniforms.uTime.value = time;
       
-      // Update resolution continuously or on resize
       materialRef.current.uniforms.uResolution.value.set(
         state.size.width * state.viewport.dpr,
         state.size.height * state.viewport.dpr
       );
       
-      if (isMouseOut.current) {
+      if (isMouseOut.current || !hasMovedSinceFocus.current) {
         targetMouse.current.set(100.0, 100.0);
       } else {
-        // Map to world space based on fresh viewport dimensions and precise window coordinates
         const mouseWorldX = (pointerNorm.current.x * state.viewport.width) / 2;
         const mouseWorldY = (pointerNorm.current.y * state.viewport.height) / 2;
         
@@ -260,23 +267,18 @@ const Blob = () => {
         );
       }
       
-      // Smooth interpolation for calm, focused feedback
-      // Returning to original state (or trailing) is softer now
-      currentMouse.current.lerp(targetMouse.current, 0.03); 
-      
+      currentMouse.current.lerp(targetMouse.current, 0.04); 
       materialRef.current.uniforms.uMouse.value.copy(currentMouse.current);
     }
     
     if (meshRef.current) {
-        // Slow rotation to enhance organic feel
-        meshRef.current.rotation.y = state.clock.elapsedTime * 0.05;
-        meshRef.current.rotation.z = state.clock.elapsedTime * 0.02;
+        meshRef.current.rotation.y = time * 0.05;
+        meshRef.current.rotation.z = time * 0.02;
     }
   });
 
   return (
     <mesh ref={meshRef} position={[meshXOffset, meshYOffset, 0]}>
-      {/* High segment sphere for smooth displacement without jitter */}
       <sphereGeometry args={[2.0, 128, 128]} />
       <shaderMaterial
         ref={materialRef}
@@ -297,7 +299,7 @@ export const FluidBlob = () => {
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
-            gl.setClearColor(new THREE.Color(0x000000), 0); // Transparent bg
+            gl.setClearColor(new THREE.Color(0x000000), 0);
         }}
       >
         <Blob />
