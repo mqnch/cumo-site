@@ -34,7 +34,7 @@ export default function Home() {
           </h1>
         </div>
         
-        <p className="text-lg sm:text-xl text-white/60 max-w-2xl text-center mt-2 tracking-wide leading-relaxed font-light">
+        <p className="text-lg sm:text-xl text-white/60 max-w-2.5xl text-center mt-2 tracking-wide leading-relaxed font-light">
           Natural language to your calendar in 50ms.<br /> No friction, just pure speed for high-velocity builders.
         </p>
       </motion.div>
@@ -45,7 +45,7 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.5, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="z-10 w-full max-w-[1000px] flex flex-col items-center sm:gap-8"
-        style={{ marginTop: '6vh', gap: '1.5rem' }}
+        style={{ marginTop: '6vh', gap: '0.75rem' }}
       >
         <motion.a
           href="https://github.com/mqnch/Cumo"
