@@ -79,7 +79,7 @@ export default function Home() {
               natural language to<br />your calendar in &lt;2s.
             </p>
             <p className="text-lg sm:text-xl text-white/60 font-medium tracking-wide max-w-2xl leading-relaxed">
-              Cumo lets you add events to your calendar in a blink of an eye; don't break your workflow.
+              Cumo lets you schedule events in a blink of an eye. Don't break your workflow, use Cumo.
             </p>
             
             <div className="flex items-center gap-4">
