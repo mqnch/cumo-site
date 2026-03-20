@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { useEffect, useState } from "react";
 
 // Deterministic pseudo-random fraction
@@ -11,11 +11,26 @@ function random(seed: number) {
 
 export function BackgroundGrid() {
   const [mounted, setMounted] = useState(false);
+  
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const maskImage = useMotionTemplate`
+    radial-gradient(ellipse at top, rgba(0,0,0,0.2) 40%, transparent 80%),
+    radial-gradient(200px circle at ${mouseX}px ${mouseY}px, rgba(0,0,0,0.7), transparent 80%)
+  `;
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-  }, []);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [mouseX, mouseY]);
 
   if (!mounted) return null;
 
@@ -57,11 +72,13 @@ export function BackgroundGrid() {
 
   return (
     <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-[#030303]">
-      <div 
+      <motion.div 
         className="relative w-full h-full"
         style={{
-          maskImage: "radial-gradient(ellipse at top, black 40%, transparent 80%)",
-          WebkitMaskImage: "radial-gradient(ellipse at top, black 40%, transparent 80%)"
+          maskImage: maskImage,
+          WebkitMaskImage: maskImage,
+          WebkitMaskComposite: "source-over",
+          maskComposite: "add",
         }}
       >
         <motion.div
@@ -70,8 +87,8 @@ export function BackgroundGrid() {
           transition={{ duration: 2, ease: "easeInOut" }}
           className="absolute left-1/2 top-0 -translate-x-1/2 w-[3000px] h-[3000px]"
         >
-          {/* Wrapper dictates flat overlay opacity to prevent overlaps from darkening */}
-          <div className="w-full h-full text-white opacity-[0.08]">
+          {/* Wrapper opacity increased since the mask now controls the dimming */}
+          <div className="w-full h-full text-white opacity-[0.35]">
             <svg width="100%" height="100%" overflow="visible">
               
               {/* Draw horizontal segments */}
@@ -133,7 +150,7 @@ export function BackgroundGrid() {
             </svg>
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   );
 }

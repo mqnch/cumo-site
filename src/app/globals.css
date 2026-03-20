@@ -30,3 +30,38 @@ a {
   text-decoration: none;
 }
 
+/* ── LightBeam animations ──────────────────────────────────────────────── */
+
+/* GPU layer promotion for all glow elements */
+.lb-gpu {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Flow: GPU-accelerated downward transform for smooth light streaming */
+.lb-flow-el {
+  animation: lb-flow 10s linear infinite;
+}
+
+@keyframes lb-flow {
+  0%   { transform: translateX(50%) translateY(0); }
+  100% { transform: translateX(50%) translateY(40px); }
+}
+
+/* Pulse: atmosphere haze slowly breathes in opacity */
+@keyframes lb-pulse {
+  0%, 100% { opacity: 0.10; }
+  50%       { opacity: 0.20; }
+}
+
+/* Rotating glow around the demo container */
+.demo-glow-spin {
+  will-change: transform;
+  animation: demo-spin 20s linear infinite;
+}
+
+@keyframes demo-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+

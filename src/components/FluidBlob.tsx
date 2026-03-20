@@ -95,19 +95,19 @@ void main() {
   vNormal = normal;
   
   // Create more organic, liquid-like morphing
-  vec3 noisePos = position * 1.8 + uTime * 0.12; 
+  vec3 noisePos = position * 1.2 + uTime * 0.10; 
   float noise = fbm(noisePos);
   
-  // Mouse interaction: Sharper, more magnetic pull
+  // Mouse interaction: Softer, magnetic pull
   float distToMouse = distance(position.xy, uMouse); 
-  float pullEffect = smoothstep(2.0, 0.0, distToMouse);
+  float pullEffect = smoothstep(2.5, 0.0, distToMouse);
   
   // Balanced noise for less spiky feel
-  float finalNoise = noise * (1.1 + pullEffect * 0.3);
+  float finalNoise = noise * (0.8 + pullEffect * 0.2);
   
-  // Calculate final displacement with more power
-  vec3 newPosition = position + normal * (finalNoise * 1.2);
-  newPosition += normal * pullEffect * 0.15; 
+  // Calculate final displacement with softer power
+  vec3 newPosition = position + normal * (finalNoise * 0.8);
+  newPosition += normal * pullEffect * 0.1; 
   
   vNoise = noise;
   vPosition = (modelMatrix * vec4(newPosition, 1.0)).xyz;
@@ -129,10 +129,10 @@ float random(vec2 st) {
 }
 
 void main() {
-  // Enhanced Silver Palette
-  vec3 color1 = vec3(1.0, 1.0, 1.0);      // Pure Silver
-  vec3 color2 = vec3(0.85, 0.88, 0.95); // Cool Silver
-  vec3 color3 = vec3(0.60, 0.65, 0.75); // Shadow Silver
+  // Teal-tinted Glassy Palette
+  vec3 color1 = vec3(0.05, 0.20, 0.35);   // Deep Teal Space
+  vec3 color2 = vec3(0.15, 0.45, 0.65);   // Medium Teal/Cyan
+  vec3 color3 = vec3(0.25, 0.75, 0.95);   // Bright Cyan Center
   
   vec3 normal = normalize(vNormal);
   vec3 viewDirection = normalize(cameraPosition - vPosition);
@@ -143,32 +143,33 @@ void main() {
   
   float mixVal = smoothstep(-0.5, 0.5, vNoise);
   vec3 baseColor = mix(color1, color2, mixVal);
-  baseColor = mix(baseColor, color3, smoothstep(0.1, -0.6, vNoise) * 0.5);
+  baseColor = mix(baseColor, color3, smoothstep(0.2, -0.6, vNoise) * 0.7);
   
-  // Stronger Specular
+  // Softer Specular
   vec3 halfDir = normalize(lightDir + viewDirection);
-  float spec = pow(max(0.0, dot(normal, halfDir)), 64.0);
+  float spec = pow(max(0.0, dot(normal, halfDir)), 32.0);
   
   // Transparency with Fresnel
-  float fresnel = pow(1.0 - max(0.0, dot(normal, viewDirection)), 2.0);
+  float fresnel = pow(1.0 - max(0.0, dot(normal, viewDirection)), 2.5);
   
   // Highlights
-  vec3 lighting = vec3(diff * 0.1); 
-  lighting += vec3(spec * 1.2);    // Very sharp highlight
-  lighting += vec3(fresnel * 0.6); // Strong rim light
+  vec3 lighting = vec3(diff * 0.05); 
+  lighting += vec3(spec * 0.6);    // Softer highlight
+  vec3 rimColor = vec3(0.3, 0.8, 0.9); // Cyan/Teal rim
+  lighting += rimColor * fresnel * 0.8; // Softer rim light
   
   vec3 finalColor = baseColor + lighting;
   
   // Grain and Iridescence
   vec2 st = gl_FragCoord.xy / uResolution.xy;
-  float grain = (random(st + uTime * 0.01) - 0.5) * 0.06; 
+  float grain = (random(st + uTime * 0.01) - 0.5) * 0.04; 
   finalColor += grain;
   
-  vec3 irid = vec3(0.05, 0.05, 0.1) * sin(fresnel * 8.0 + uTime * 0.5);
-  finalColor += irid;
+  vec3 irid = vec3(0.1, 0.5, 0.6) * sin(fresnel * 5.0 + uTime * 0.6); // softer teal iridescence
+  finalColor += irid * 0.2;
 
   // Restore transparency
-  float alpha = 0.85 - (fresnel * 0.35); // transparent edges
+  float alpha = 0.9 - (fresnel * 0.2); // keep core opaque, softer edges
 
   gl_FragColor = vec4(finalColor, alpha);
 }
@@ -279,7 +280,8 @@ const Blob = () => {
 
   return (
     <mesh ref={meshRef} position={[meshXOffset, meshYOffset, 0]}>
-      <sphereGeometry args={[2.0, 128, 128]} />
+      {/* Geometry resolution balanced for smooth blob look while maintaining performance */}
+      <sphereGeometry args={[2.0, 96, 96]} />
       <shaderMaterial
         ref={materialRef}
         vertexShader={vertexShader}
@@ -293,11 +295,11 @@ const Blob = () => {
 
 export const FluidBlob = () => {
   return (
-    <div className="fixed inset-0 z-[-1] pointer-events-none w-full h-full overflow-hidden">
+    <div className="fixed inset-0 z-[-1] pointer-events-none w-full h-full overflow-hidden blur-[0.5px] opacity-90 mix-blend-screen">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 45 }}
-        dpr={[1, 2]}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        dpr={[1, 1.5]} // Cap max DPR to 1.5 instead of 2 for performance
+        gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }} // Disable antialiasing (shaders handle smoothness)
         onCreated={({ gl }) => {
             gl.setClearColor(new THREE.Color(0x000000), 0);
         }}
