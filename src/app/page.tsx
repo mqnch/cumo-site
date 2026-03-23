@@ -1,7 +1,6 @@
 "use client";
 
 import { BackgroundGrid } from "@/components/BackgroundGrid";
-import { FluidBlob } from "@/components/FluidBlob";
 import { LightBeam } from "@/components/LightBeam";
 
 // Static noise data-URI — tiled as a cached bitmap, renders instantly.
@@ -43,8 +42,6 @@ export default function Home() {
           opacity: 0.12, // Increased slightly since it's purely white noise now
         }}
       />
-
-      <FluidBlob />
 
       <div className="z-10 w-full max-w-[1000px] flex flex-col items-start px-4 sm:px-0 gap-y-20 sm:gap-y-28">
         {/* Header Section */}
