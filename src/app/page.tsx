@@ -1,6 +1,7 @@
 "use client";
 
 import { BackgroundGrid } from "@/components/BackgroundGrid";
+import { FeatureHighlightSection } from "@/components/FeatureHighlightBoxes";
 import { LightBeam } from "@/components/LightBeam";
 
 // Static noise data-URI — tiled as a cached bitmap, renders instantly.
@@ -10,6 +11,37 @@ const NOISE_URI =
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+
+const HERO_HEADLINE_LINES = ["natural language to", "your calendar in <2s."];
+
+function InteractiveHeroHeadline() {
+  return (
+    <p
+      className="text-3xl sm:text-5xl lg:text-6xl text-white max-w-4xl text-left tracking-tight leading-[1.1] font-bold"
+      aria-label="natural language to your calendar in <2s."
+    >
+      {HERO_HEADLINE_LINES.map((line, lineIndex) => (
+        <span key={`line-${lineIndex}`} aria-hidden="true">
+          {line.split("").map((char, charIndex) => {
+            if (char === " ") {
+              return <span key={`space-${lineIndex}-${charIndex}`} className="inline-block">&nbsp;</span>;
+            }
+
+            return (
+              <motion.span
+                key={`char-${lineIndex}-${charIndex}`}
+                className="inline-block text-white transition-colors duration-[2600ms] ease-out hover:text-[#6b7f98] hover:duration-150 motion-reduce:transition-none motion-reduce:hover:text-white"
+              >
+                {char}
+              </motion.span>
+            );
+          })}
+          {lineIndex < HERO_HEADLINE_LINES.length - 1 ? <br /> : null}
+        </span>
+      ))}
+    </p>
+  );
+}
 
 export default function Home() {
   const [stars, setStars] = useState<number | null>(null);
@@ -22,9 +54,9 @@ export default function Home() {
   }, []);
 
   return (
-    <main 
-      className="min-h-screen flex flex-col items-center relative overflow-hidden px-4"
-      style={{ paddingTop: '3vh', paddingBottom: '30vh' }}
+    <main
+      className="relative flex min-h-screen w-full flex-col"
+      style={{ paddingTop: "3vh", paddingBottom: "20vh" }}
     >
       <BackgroundGrid />
 
@@ -36,14 +68,19 @@ export default function Home() {
           inset: 0,
           zIndex: 50,
           pointerEvents: "none",
+          contain: "paint",
           backgroundImage: `url("${NOISE_URI}")`,
           backgroundSize: "200px 200px",
           mixBlendMode: "screen",
-          opacity: 0.12, // Increased slightly since it's purely white noise now
+          opacity: 0.095,
         }}
       />
 
-      <div className="z-10 w-full max-w-[1000px] flex flex-col items-start px-4 sm:px-0 gap-y-20 sm:gap-y-28">
+      {/*
+        Grid-aligned column: same centering as BackgroundGrid (do not use items-center on main —
+        that stacks with left-1/2 and shifts everything right). 1000px ≈ verticals at SVG x 1000–2000.
+      */}
+      <div className="z-10 box-border mx-auto flex w-full max-w-[1000px] flex-col items-stretch gap-y-20 px-4 sm:gap-y-28 sm:px-0">
         {/* Header Section */}
         <div className="flex flex-col items-start w-full gap-y-24 sm:gap-y-32">
           <header className="w-full flex items-center">
@@ -72,11 +109,9 @@ export default function Home() {
             transition={{ duration: 1.2, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col items-start gap-y-2 sm:gap-y-4"
           >
-            <p className="text-3xl sm:text-5xl lg:text-6xl text-white max-w-4xl text-left tracking-tight leading-[1.1] font-bold">
-              natural language to<br />your calendar in &lt;2s.
-            </p>
+            <InteractiveHeroHeadline />
             <p className="text-lg sm:text-xl text-white/60 font-medium tracking-wide max-w-2xl leading-relaxed">
-              Cumo lets you schedule events in a blink of an eye. Don't break your workflow, use Cumo.
+              Cumo lets you schedule events in a blink of an eye. Don&apos;t break your workflow. Use Cumo.
             </p>
             
             <div className="flex items-center gap-4">
@@ -134,7 +169,7 @@ export default function Home() {
         >
 
         {/* Wrapper: demo container + light beam */}
-        <div className="relative w-full" style={{ overflow: 'visible' }}>
+        <div className="relative w-full" style={{ overflow: "visible" }}>
           <LightBeam />
 
           {/* Demo video container */}
@@ -142,7 +177,7 @@ export default function Home() {
             <div className="absolute inset-[1px] rounded-[calc(2rem-1px)] bg-[#080808] flex items-center justify-center overflow-hidden">
               <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-white/[0.02]" />
-              
+
               <div className="relative flex flex-col items-center justify-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10 shadow-lg">
                   <svg className="w-6 h-6 ml-1 text-white/60" viewBox="0 0 24 24" fill="currentColor">
@@ -157,59 +192,9 @@ export default function Home() {
           </div>
         </div>
         </motion.div>
+
+        <FeatureHighlightSection />
       </div>
-
-      {/* Core Features Section */}
-      <motion.div 
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-        className="z-10 w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-12 sm:gap-8 px-6 mb-24 md:mb-40"
-        style={{ marginTop: '12vh' }}
-      >
-        <div className="flex flex-col items-center text-center" style={{ gap: '1.25rem' }}>
-          <div className="w-12 h-12 rounded-full border border-white/10 bg-white/10 shadow-sm flex items-center justify-center">
-            <svg className="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
-          <div className="flex flex-col items-center" style={{ gap: '0.5rem' }}>
-            <h3 className="text-xl font-bold tracking-tight text-white/90">sub 50ms latency</h3>
-            <p className="text-white/60 text-sm leading-relaxed max-w-[260px]">
-              instant nlp. from natural language to calendar event in a single keystroke.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center text-center" style={{ gap: '1.25rem' }}>
-          <div className="w-12 h-12 rounded-full border border-white/10 bg-white/10 shadow-sm flex items-center justify-center">
-            <svg className="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-            </svg>
-          </div>
-          <div className="flex flex-col items-center" style={{ gap: '0.5rem' }}>
-            <h3 className="text-xl font-bold tracking-tight text-white/90">local-first</h3>
-            <p className="text-white/60 text-sm leading-relaxed max-w-[270px]">
-              zero network bottlenecks. local processing keeps your data private and your workflow fast.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center text-center" style={{ gap: '1.25rem' }}>
-          <div className="w-12 h-12 rounded-full border border-white/10 bg-white/10 shadow-sm flex items-center justify-center">
-            <svg className="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-            </svg>
-          </div>
-          <div className="flex flex-col items-center" style={{ gap: '0.5rem' }}>
-            <h3 className="text-xl font-bold tracking-tight text-white/90">minimal as hell</h3>
-            <p className="text-white/60 text-sm leading-relaxed max-w-[260px]">
-              no messy forms or cluttered uis. hit the shortcut, type, and return to building.
-            </p>
-          </div>
-        </div>
-      </motion.div>
     </main>
   );
 }

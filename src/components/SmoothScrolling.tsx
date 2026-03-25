@@ -5,12 +5,13 @@ import { ReactLenis } from 'lenis/react';
 
 export function SmoothScrolling({ children }: { children: React.ReactNode }) {
   return (
-    <ReactLenis 
-      root 
-      options={{ 
-        lerp: 0.08, 
-        duration: 1.5, 
-        smoothWheel: true 
+    <ReactLenis
+      className="h-dvh max-h-dvh w-full overflow-x-hidden overflow-y-auto overscroll-y-contain"
+      style={{ scrollbarGutter: "stable both-edges" }}
+      options={{
+        lerp: 0.08,
+        duration: 1.5,
+        smoothWheel: true,
       }}
     >
       {children}

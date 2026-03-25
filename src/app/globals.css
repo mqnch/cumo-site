@@ -1,23 +1,35 @@
 @import "tailwindcss";
+/* Lenis: html/body height + overflow behavior — avoids duplicate scrollbars with smooth scroll */
+@import "lenis/dist/lenis.css";
 
 :root {
   --background: #030303;
   --foreground: #ededed;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+/* In @layer base so Tailwind utilities (e.g. p-*, px-*) can override this reset */
+@layer base {
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+/*
+ * Document does not scroll — avoids double bars with Lenis (window + html) or overflow pairing.
+ * Single scrollbar: Lenis wrapper in SmoothScrolling.tsx (h-dvh overflow-y-auto).
+ */
+html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-mono), monospace;
@@ -32,26 +44,47 @@ a {
 
 /* ── LightBeam animations ──────────────────────────────────────────────── */
 
-/* GPU layer promotion for all glow elements */
-.lb-gpu {
-  will-change: transform, opacity;
-  transform: translateZ(0);
-}
-
-/* Flow: GPU-accelerated downward transform for smooth light streaming */
+/* Only the layer that animates transform promotes itself */
 .lb-flow-el {
+  will-change: transform;
   animation: lb-flow 10s linear infinite;
 }
 
-@keyframes lb-flow {
-  0%   { transform: translateX(50%) translateY(0); }
-  100% { transform: translateX(50%) translateY(40px); }
+.lb-pulse-el {
+  will-change: opacity;
+  animation: lb-pulse 4s ease-in-out infinite;
 }
 
-/* Pulse: atmosphere haze slowly breathes in opacity */
+@media (prefers-reduced-motion: reduce) {
+  .lb-flow-el {
+    animation: none;
+    will-change: auto;
+  }
+
+  .lb-pulse-el {
+    animation: none;
+    will-change: auto;
+    opacity: 0.14;
+  }
+}
+
+@keyframes lb-flow {
+  0% {
+    transform: translateX(50%) translateY(0);
+  }
+  100% {
+    transform: translateX(50%) translateY(40px);
+  }
+}
+
 @keyframes lb-pulse {
-  0%, 100% { opacity: 0.10; }
-  50%       { opacity: 0.20; }
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.2;
+  }
 }
 
 /* Rotating glow around the demo container */
@@ -61,7 +94,10 @@ a {
 }
 
 @keyframes demo-spin {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
-
