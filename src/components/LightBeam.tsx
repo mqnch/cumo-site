@@ -46,32 +46,12 @@ export function LightBeam() {
         zIndex: 0,
       }}
     >
-      {/* Wide ambient + pulse — no blur */}
-      <div
-        className="lb-pulse-el"
-        style={{
-          position: "absolute",
-          right: "25%",
-          top: "-1000px",
-          width: "1200px",
-          height: "1700px",
-          transform: "translateX(50%)",
-          background:
-            "radial-gradient(ellipse 22% 42% at 52% 25%, rgba(60,140,255,0.14) 0%, rgba(45,115,235,0.055) 50%, transparent 100%)",
-          mixBlendMode: "screen",
-          maskImage:
-            "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.35) 28%, black 52%)",
-          WebkitMaskImage:
-            "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.35) 28%, black 52%)",
-        }}
-      />
-
       {/* Bloom body — single animated layer with will-change: transform */}
       <div
         className="lb-flow-el"
         style={{
           position: "absolute",
-          right: "27%",
+          right: "27.5%",
           top: "-800px",
           width: "720px",
           height: "1900px",

@@ -69,7 +69,7 @@ function ShortcutVisual() {
       className="relative flex min-h-[8rem] w-full items-center justify-center"
       aria-hidden="true"
     >
-      <div className="group/keys relative inline-flex cursor-default items-center gap-4 rounded-xl p-2 -m-2 sm:gap-5">
+      <div className="group/keys relative inline-flex cursor-default items-center gap-4 rounded-xl p-2 -m-2 sm:gap-5 translate-y-1.5">
         <Keycap>
           <span className="text-[2rem] leading-none">⌘</span>
         </Keycap>
@@ -283,7 +283,7 @@ export function FeatureHighlightSection() {
       </FeatureColumn>
 
       <FeatureColumn
-        title="Fast local NLP."
+        title="Fast & local NLP."
         description="Processing stays on your machine, and there's no LLM API calls to slow you down."
         index={1}
       >

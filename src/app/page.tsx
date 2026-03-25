@@ -30,7 +30,7 @@ function InteractiveHeroHeadline() {
             return (
               <motion.span
                 key={`char-${lineIndex}-${charIndex}`}
-                className="inline-block text-white transition-colors duration-[2600ms] ease-out hover:text-[#6b7f98] hover:duration-150 motion-reduce:transition-none motion-reduce:hover:text-white"
+                className="inline-block text-white transition-colors duration-[7000ms] ease-out hover:text-[#6b7f98] hover:duration-150 motion-reduce:transition-none motion-reduce:hover:text-white"
               >
                 {char}
               </motion.span>
