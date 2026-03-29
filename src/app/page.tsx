@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-const HERO_HEADLINE_LINES = ["natural language to", "your calendar in <2s."];
+const HERO_HEADLINE_LINES = ["natural language to", "your calendar in <2s"];
 
 function InteractiveHeroHeadline() {
   return (
@@ -57,7 +57,7 @@ export default function Home() {
   return (
     <main
       className="relative flex min-h-screen w-full flex-col"
-      style={{ paddingTop: "3vh", paddingBottom: "20vh" }}
+      style={{ paddingTop: "3vh", paddingBottom: "4vh" }}
     >
       <BackgroundGrid />
 
@@ -187,6 +187,12 @@ export default function Home() {
         </motion.div>
 
         <FeatureHighlightSection />
+
+        <div className="w-full text-left mt-8 sm:mt-12">
+          <p className="text-sm font-medium text-white/40">
+            &copy; 2026 Cumo
+          </p>
+        </div>
       </div>
     </main>
   );
