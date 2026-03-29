@@ -190,7 +190,7 @@ export default function Home() {
 
         <div className="w-full text-left mt-8 sm:mt-12">
           <p className="text-sm font-medium text-white/40">
-            &copy; 2026 Cumo
+            2026 &copy; Cumo
           </p>
         </div>
       </div>
