@@ -67,7 +67,7 @@ export default function Home() {
         style={{
           position: "fixed",
           inset: 0,
-          zIndex: 50,
+          zIndex: 5, // Lower than content (10) but higher than grid (-1)
           pointerEvents: "none",
           contain: "paint",
           backgroundImage: `url("${NOISE_URI}")`,
@@ -173,16 +173,13 @@ export default function Home() {
         <div className="relative w-full" style={{ overflow: "visible" }}>
           <LightBeam />
 
-          {/* Demo video container */}
-          <div className="relative w-full aspect-[16/10] sm:aspect-video rounded-2xl sm:rounded-[2rem] p-[1px] bg-gradient-to-b from-white/20 to-transparent overflow-hidden shadow-2xl shadow-white/[0.03]" style={{ zIndex: 2 }}>
-            <div className="absolute inset-[1px] rounded-[calc(2rem-1px)] bg-[#080808] flex items-center justify-center overflow-hidden">
-              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-white/[0.02]" />
-
+          {/* Demo video container - z-index high enough to sit above global grain (50) */}
+          <div className="relative w-full aspect-video rounded-2xl sm:rounded-[2rem] overflow-hidden shadow-2xl shadow-white/[0.03]" style={{ zIndex: 60 }}>
+            <div className="absolute inset-0 bg-black flex items-center justify-center overflow-hidden">
               <VideoPlayer 
-                src="https://qoisaom6aaqdnbmu.private.blob.vercel-storage.com/demo.mp4" 
+                src="https://fl3z9qisrqmcielb.public.blob.vercel-storage.com/demo.mp4" 
                 poster="/demo-poster.png" 
-                className="w-full h-full"
+                className="w-full h-full object-cover scale-[1.01]" 
               />
             </div>
           </div>
