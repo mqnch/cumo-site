@@ -3,6 +3,7 @@
 import { BackgroundGrid } from "@/components/BackgroundGrid";
 import { FeatureHighlightSection } from "@/components/FeatureHighlightBoxes";
 import { LightBeam } from "@/components/LightBeam";
+import { VideoPlayer } from "@/components/VideoPlayer";
 
 // Static noise data-URI — tiled as a cached bitmap, renders instantly.
 // Uses feColorMatrix to map the turbulence strictly to white dots with varying alpha.
@@ -178,16 +179,11 @@ export default function Home() {
               <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-white/[0.02]" />
 
-              <div className="relative flex flex-col items-center justify-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10 shadow-lg">
-                  <svg className="w-6 h-6 ml-1 text-white/60" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-                <p className="text-white/30 font-mono text-xs tracking-[0.2em] uppercase">
-                  Demo Video
-                </p>
-              </div>
+              <VideoPlayer 
+                src="https://qoisaom6aaqdnbmu.private.blob.vercel-storage.com/demo.mp4" 
+                poster="/demo-poster.png" 
+                className="w-full h-full"
+              />
             </div>
           </div>
         </div>
