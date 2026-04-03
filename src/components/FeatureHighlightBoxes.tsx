@@ -1,13 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState, useRef } from "react";
 import type { ReactNode } from "react";
 
 const mono =
   "font-[family-name:var(--font-geist-mono),ui-monospace,monospace]";
 
 const cardClass = [
-  "relative z-[1] flex h-full min-h-[300px] flex-col overflow-hidden rounded-2xl",
+  "relative z-[1] flex h-full min-h-[300px] sm:min-h-[300px] flex-col overflow-hidden rounded-2xl",
   "border border-white/[0.07] bg-gradient-to-b from-white/[0.03] to-transparent",
 ].join(" ");
 
@@ -28,11 +29,15 @@ function Keycap({ children }: { children: ReactNode }) {
         keycapOuterTransition,
         "shadow-[0_3px_0_rgba(0,0,0,0.65),0_14px_28px_rgba(0,0,0,0.42)]",
         "group-hover/card:translate-y-[2px]",
+        "group-data-[tapped=true]/card:translate-y-[2px]",
         "group-hover/card:shadow-none",
+        "group-data-[tapped=true]/card:shadow-none",
         "group-hover/keys:translate-y-[2px]",
         "group-hover/keys:shadow-none",
         "motion-reduce:group-hover/card:translate-y-0",
+        "motion-reduce:group-data-[tapped=true]/card:translate-y-0",
         "motion-reduce:group-hover/card:shadow-[0_3px_0_rgba(0,0,0,0.65),0_14px_28px_rgba(0,0,0,0.42)]",
+        "motion-reduce:group-data-[tapped=true]/card:shadow-[0_3px_0_rgba(0,0,0,0.65),0_14px_28px_rgba(0,0,0,0.42)]",
         "motion-reduce:group-hover/keys:translate-y-0",
         "motion-reduce:group-hover/keys:shadow-[0_3px_0_rgba(0,0,0,0.65),0_14px_28px_rgba(0,0,0,0.42)]",
       ].join(" ")}
@@ -45,11 +50,15 @@ function Keycap({ children }: { children: ReactNode }) {
           keycapInnerTransition,
           "shadow-[inset_0_2px_0_rgba(255,255,255,0.26),inset_0_-4px_8px_rgba(0,0,0,0.5),0_4px_0_rgba(0,0,0,0.55),0_8px_0_rgba(0,0,0,0.35),0_16px_32px_rgba(0,0,0,0.5)]",
           "group-hover/card:translate-y-[2px]",
+          "group-data-[tapped=true]/card:translate-y-[2px]",
           "group-hover/card:shadow-none",
+          "group-data-[tapped=true]/card:shadow-none",
           "group-hover/keys:translate-y-[2px]",
           "group-hover/keys:shadow-none",
           "motion-reduce:group-hover/card:translate-y-0",
+          "motion-reduce:group-data-[tapped=true]/card:translate-y-0",
           "motion-reduce:group-hover/card:shadow-[inset_0_2px_0_rgba(255,255,255,0.26),inset_0_-4px_8px_rgba(0,0,0,0.5),0_4px_0_rgba(0,0,0,0.55),0_8px_0_rgba(0,0,0,0.35),0_16px_32px_rgba(0,0,0,0.5)]",
+          "motion-reduce:group-data-[tapped=true]/card:shadow-[inset_0_2px_0_rgba(255,255,255,0.26),inset_0_-4px_8px_rgba(0,0,0,0.5),0_4px_0_rgba(0,0,0,0.55),0_8px_0_rgba(0,0,0,0.35),0_16px_32px_rgba(0,0,0,0.5)]",
           "motion-reduce:group-hover/keys:translate-y-0",
           "motion-reduce:group-hover/keys:shadow-[inset_0_2px_0_rgba(255,255,255,0.26),inset_0_-4px_8px_rgba(0,0,0,0.5),0_4px_0_rgba(0,0,0,0.55),0_8px_0_rgba(0,0,0,0.35),0_16px_32px_rgba(0,0,0,0.5)]",
           "ring-1 ring-inset ring-white/[0.1]",
@@ -66,7 +75,7 @@ function Keycap({ children }: { children: ReactNode }) {
 function ShortcutVisual() {
   return (
     <div
-      className="relative flex min-h-[8rem] w-full items-center justify-center"
+      className="relative flex min-h-[5rem] sm:min-h-[8rem] w-full items-center justify-center"
       aria-hidden="true"
     >
       <div className="group/keys relative inline-flex cursor-default items-center gap-4 rounded-xl p-2 -m-2 sm:gap-5 translate-y-1.5">
@@ -92,7 +101,7 @@ function LockVisual() {
 
   return (
     <div
-      className="relative flex min-h-[8rem] w-full items-center justify-center"
+      className="relative flex min-h-[5rem] sm:min-h-[8rem] w-full items-center justify-center"
       aria-hidden="true"
     >
       <svg
@@ -155,7 +164,7 @@ function LockVisual() {
         <g filter="url(#lock-icon-float)">
           {/* Shackle first; body drawn on top occludes legs “inside” the metal */}
           <g
-            className="origin-[48px_34px] rotate-[18deg] transition-transform duration-[820ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/card:rotate-0 motion-reduce:rotate-0 motion-reduce:transition-none"
+            className="origin-[48px_34px] rotate-[18deg] transition-transform duration-[820ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/card:rotate-0 group-data-[tapped=true]/card:rotate-0 motion-reduce:rotate-0 motion-reduce:transition-none"
           >
             <path
               d={shackleD}
@@ -222,6 +231,17 @@ function FeatureColumn({
   children: ReactNode;
   index: number;
 }) {
+  const [tapped, setTapped] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleTap = () => {
+    setTapped(true);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setTapped(false);
+    }, 600);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 36 }}
@@ -234,10 +254,14 @@ function FeatureColumn({
       }}
       className="h-full"
     >
-      <div className="group/card relative h-full">
+      <div 
+        className="group/card relative h-full cursor-pointer sm:cursor-default"
+        data-tapped={tapped ? "true" : "false"}
+        onClick={handleTap}
+      >
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 ease-out group-hover/card:opacity-100 motion-reduce:transition-none"
+          className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 ease-out group-hover/card:opacity-100 group-data-[tapped=true]/card:opacity-100 motion-reduce:transition-none"
           style={{
             boxShadow:
               "0 0 0 1px rgba(90,165,255,0.24), 0 0 20px 2px rgba(90,165,255,0.2), 0 0 38px 6px rgba(60,130,255,0.1)",
@@ -246,8 +270,8 @@ function FeatureColumn({
         <div className={cardClass}>
         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/[0.1] to-transparent" />
 
-        <div className="flex min-h-0 flex-1 flex-col p-8 sm:p-10">
-          <div className="flex shrink-0 flex-col gap-2.5">
+        <div className="flex min-h-0 flex-1 flex-col p-6 sm:p-10">
+          <div className="flex shrink-0 flex-col gap-1.5 sm:gap-2.5">
             <h3 className="text-xl font-bold tracking-tight text-white/90 sm:text-2xl">
               {title}
             </h3>
@@ -256,7 +280,7 @@ function FeatureColumn({
             </p>
           </div>
 
-          <div className="flex min-h-[8rem] flex-1 flex-col items-center justify-center pt-4">
+          <div className="flex min-h-[5rem] sm:min-h-[8rem] flex-1 flex-col items-center justify-center pt-2 sm:pt-4">
             {children}
           </div>
         </div>
