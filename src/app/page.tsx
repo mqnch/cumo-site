@@ -18,7 +18,7 @@ const HERO_HEADLINE_LINES = ["natural language to", "your calendar in <2s"];
 function InteractiveHeroHeadline() {
   return (
     <p
-      className="text-3xl sm:text-5xl lg:text-6xl text-white max-w-4xl text-left tracking-tight leading-[1.1] font-bold"
+      className="text-[28px] sm:text-5xl lg:text-6xl text-white max-w-4xl text-left tracking-tight leading-[1.1] font-bold"
       aria-label="natural language to your calendar in <2s."
     >
       {HERO_HEADLINE_LINES.map((line, lineIndex) => (
@@ -81,9 +81,9 @@ export default function Home() {
         Grid-aligned column: same centering as BackgroundGrid (do not use items-center on main —
         that stacks with left-1/2 and shifts everything right). 1000px ≈ verticals at SVG x 1000–2000.
       */}
-      <div className="z-10 box-border mx-auto flex w-full max-w-[1000px] flex-col items-stretch gap-y-20 px-4 sm:gap-y-28 sm:px-0">
+      <div className="z-10 box-border mx-auto flex w-full max-w-[1000px] flex-col items-stretch gap-y-20 px-8 sm:gap-y-28 sm:px-0">
         {/* Header Section */}
-        <div className="flex flex-col items-start w-full gap-y-24 sm:gap-y-32">
+        <div className="flex flex-col items-start w-full gap-y-12 sm:gap-y-32">
           <header className="w-full flex items-center">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
@@ -111,11 +111,24 @@ export default function Home() {
             className="flex flex-col items-start gap-y-2 sm:gap-y-4"
           >
             <InteractiveHeroHeadline />
-            <p className="text-lg sm:text-xl text-white/60 font-medium tracking-wide max-w-2xl leading-relaxed">
+            <p className="text-base sm:text-xl text-white/60 font-medium tracking-wide max-w-2xl leading-relaxed">
               Cumo lets you schedule events in a blink of an eye. Don&apos;t break your workflow. Use Cumo.
             </p>
             
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col items-start gap-3 sm:gap-4">
+              <div 
+                className="flex items-center rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md shadow-sm"
+                style={{ padding: '0.25rem 0.75rem', gap: '0.75rem' }}
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/40 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white/60"></span>
+                </span>
+                <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-white/60 mt-[1px]">
+                  Release Build Coming Soon
+                </span>
+              </div>
+
               <motion.a
                 href="https://github.com/mqnch/Cumo"
                 target="_blank"
@@ -143,19 +156,6 @@ export default function Home() {
                   </span>
                 </div>
               </motion.a>
-
-              <div 
-                className="flex items-center rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md shadow-sm"
-                style={{ padding: '0.25rem 0.75rem', gap: '0.75rem' }}
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/40 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white/60"></span>
-                </span>
-                <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-white/60 mt-[1px]">
-                  Release Build Coming Soon
-                </span>
-              </div>
             </div>
           </motion.div>
         </div>
@@ -174,7 +174,7 @@ export default function Home() {
           <LightBeam />
 
           {/* Demo video container - z-index high enough to sit above global grain (50) */}
-          <div className="relative w-full aspect-video rounded-2xl sm:rounded-[2rem] overflow-hidden shadow-2xl shadow-white/[0.03]" style={{ zIndex: 60 }}>
+          <div className="relative w-full aspect-[4/3] sm:aspect-video rounded-2xl sm:rounded-[2rem] overflow-hidden shadow-2xl shadow-white/[0.03]" style={{ zIndex: 60 }}>
             <div className="absolute inset-0 bg-black flex items-center justify-center overflow-hidden">
               <VideoPlayer 
                 src="https://fl3z9qisrqmcielb.public.blob.vercel-storage.com/demo.mp4" 
@@ -188,7 +188,7 @@ export default function Home() {
 
         <FeatureHighlightSection />
 
-        <div className="w-full text-left mt-8 sm:mt-12">
+        <div className="w-full text-left -mt-8 sm:mt-12">
           <p className="text-sm font-medium text-white/40">
             2026 &copy; Cumo
           </p>

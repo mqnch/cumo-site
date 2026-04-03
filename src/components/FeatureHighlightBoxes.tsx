@@ -271,7 +271,7 @@ function FeatureColumn({
 export function FeatureHighlightSection() {
   return (
     <section
-      className={`relative z-[12] grid w-full grid-cols-1 gap-10 md:grid-cols-2 md:items-stretch md:gap-10 ${mono}`}
+      className={`relative z-[12] grid w-full grid-cols-1 gap-6 sm:gap-10 md:grid-cols-2 md:items-stretch md:gap-10 ${mono}`}
       aria-label="Product highlights"
     >
       <FeatureColumn
