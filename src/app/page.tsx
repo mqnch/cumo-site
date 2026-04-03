@@ -57,7 +57,10 @@ export default function Home() {
   return (
     <main
       className="relative flex min-h-screen w-full flex-col"
-      style={{ paddingTop: "3vh", paddingBottom: "4vh" }}
+      style={{ 
+        paddingTop: "max(3vh, env(safe-area-inset-top))", 
+        paddingBottom: "max(4vh, env(safe-area-inset-bottom))" 
+      }}
     >
       <BackgroundGrid />
 

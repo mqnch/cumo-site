@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScrolling } from "@/components/SmoothScrolling";
@@ -16,6 +16,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Cumo",
   description: "Seamless calendar workflows",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#030303",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
